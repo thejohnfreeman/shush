@@ -14,16 +14,26 @@ class Arguments:
         return Arguments(self.args + args, {**self.kwargs, **kwargs})
 
 class Shell:
-    here = subprocess.PIPE
-    nowhere = subprocess.DEVNULL
-    def __init__(self, popen=Arguments()):
+    def __init__(self, popen=Arguments(), stdout=None):
         self.popen = popen
+        self.stdout = stdout
     def __call__(self, *args, **kwargs):
-        return Shell(self.popen(*args, **kwargs))
+        return Shell(self.popen(*args, **kwargs), self.stdout)
     def __getattr__(self, program):
         return Command(program, self.popen)
     def __getitem__(self, program):
         return Command(program, self.popen)
+    def __gt__(self, pipeline):
+        return pipeline > self
+    @property
+    def there(self):
+        return Shell(self.popen, None)
+    @property
+    def here(self):
+        return Shell(self.popen, subprocess.PIPE)
+    @property
+    def nowhere(self):
+        return Shell(self.popen, subprocess.DEVNULL)
 
 class Command:
     def __init__(self, program, popen, argv=Arguments()):
@@ -91,7 +101,7 @@ class Pipeline:
         if stdout is None:
             stdout = subprocess.DEVNULL
         elif isinstance(stdout, Shell):
-            stdout = None
+            stdout = stdout.stdout
         elif isinstance(stdout, str):
             stdout = open(stdout, 'wb')
         return self.check(stdout=stdout)
