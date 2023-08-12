@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "shush"
 version = "0.2.0"
-description = "Subprocesses in the style of shell scripts."
+description = "Subprocesses for humans."
 authors = ["John Freeman <jfreeman08@gmail.com>"]
 license = "ISC"
 
