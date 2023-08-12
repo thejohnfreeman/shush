@@ -42,8 +42,10 @@ class Command:
         for k, v in self.argv.kwargs.items():
             if v is True:
                 command.append(option(k))
-            else:
+            elif len(k) == 1:
                 command.extend([option(k), str(v)])
+            else:
+                command.append(f'{option(k)}={str(v)}')
         for v in self.argv.args:
             if v is False or v is None:
                 continue
@@ -99,11 +101,6 @@ class Pipeline:
     def __or__(self, tail):
         return Pipeline(self.commands + pipe(tail).commands, stdin=self.stdin)
     def check(self, stdout=None):
-        # if command first, give it our stdin
-        # if command first and stdin is bytes, close stdin
-        # if command not first, give it stdin from previous command
-        # if command last, give it our stdout, checkit, and return it
-        # if command not last, give it subprocess.PIPE for stdout
         stdin = self.stdin
         if isinstance(stdin, str):
             stdin = stdin.encode()
