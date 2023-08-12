@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "shush"
-version = "0.1.0"
+version = "0.2.0"
 description = "Subprocesses in the style of shell scripts."
 authors = ["John Freeman <jfreeman08@gmail.com>"]
 license = "ISC"
