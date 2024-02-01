@@ -25,6 +25,10 @@ class Shell:
         return Command(program, self.popen)
     def __gt__(self, pipeline):
         return pipeline > self
+    def __matmul__(self, path):
+        return Shell(self.popen(cwd=path), self.stdout)
+    def __mod__(self, env):
+        return Shell(self.popen(env=os.environ | env), self.stdout)
     @property
     def there(self):
         return Shell(self.popen, None)
@@ -44,6 +48,10 @@ class Command:
         return Command(self.program, self.popen, self.argv(*args, **kwargs))
     def __getattr__(self, kwarg):
         return Proxy(self, kwarg)
+    def __matmul__(self, path):
+        return Command(self.program, self.popen(cwd=path), self.argv)
+    def __mod__(self, env):
+        return Command(self.program, self.popen(env=os.environ | env), self.argv)
     def join(self):
         assert('stderr' not in self.popen.kwargs)
         return Command(self.program, self.popen(stderr=subprocess.STDOUT), self.argv)

@@ -106,13 +106,39 @@ def test_shell_env():
     proc = sh_> sh_.env | sh_.grep('foo')
     assert(proc.stdout == b'foo=bar\n')
 
+def test_shell_env_op():
+    sh_ = sh % {'foo': 'bar'}
+    proc = sh_> sh_.env | sh_.grep('foo')
+    assert(proc.stdout == b'foo=bar\n')
+
+def test_shell_cwd():
+    cwd = pathlib.Path('.').resolve().parent
+    sh_ = sh(cwd=cwd)
+    proc = sh_> sh_.pwd
+    assert(proc.stdout == f'{cwd}\n'.encode())
+
+def test_shell_cwd_op():
+    cwd = pathlib.Path('.').resolve().parent
+    sh_ = sh @ cwd
+    proc = sh_> sh_.pwd
+    assert(proc.stdout == f'{cwd}\n'.encode())
+
 def test_command_env():
     proc = sh> sh.env.env({'foo': 'bar'}) | sh.grep('foo')
+    assert(proc.stdout == b'foo=bar\n')
+
+def test_command_env_op():
+    proc = sh> sh.env % {'foo': 'bar'} | sh.grep('foo')
     assert(proc.stdout == b'foo=bar\n')
 
 def test_command_cwd():
     cwd = pathlib.Path('.').resolve().parent
     proc = sh> sh.pwd.cwd(cwd)
+    assert(proc.stdout == f'{cwd}\n'.encode())
+
+def test_command_cwd_op():
+    cwd = pathlib.Path('.').resolve().parent
+    proc = sh> sh.pwd @ cwd
     assert(proc.stdout == f'{cwd}\n'.encode())
 
 def test_command_cwd_chain():
