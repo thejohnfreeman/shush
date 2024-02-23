@@ -125,6 +125,16 @@ def test_shell_cwd_op(sh):
     proc = sh> sh.pwd
     assert(proc.stdout == f'{cwd}\n'.encode())
 
+def test_shell_cwd_relative(sh):
+    with tempfile.TemporaryDirectory() as cwd:
+        cwd = pathlib.Path(cwd).resolve()
+        name = cwd.name
+        assert(name)
+        sh = sh @ cwd.parent
+        sh = sh @ name
+        proc = sh> sh.pwd
+        assert(proc.stdout == f'{cwd}\n'.encode())
+
 def test_command_env(sh):
     proc = sh> sh.env.env({'foo': 'bar'}) | sh.grep('foo')
     assert(proc.stdout == b'foo=bar\n')

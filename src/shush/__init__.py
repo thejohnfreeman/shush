@@ -26,7 +26,8 @@ class Shell:
     def __gt__(self, pipeline):
         return pipeline > self
     def __matmul__(self, path):
-        return Shell(self.popen(cwd=path), self.stdout)
+        cwd = self.popen.kwargs.get('cwd', pathlib.Path())
+        return Shell(self.popen(cwd=cwd / path), self.stdout)
     def __mod__(self, env):
         return Shell(self.popen(env=os.environ | env), self.stdout)
     @property
